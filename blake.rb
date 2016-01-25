@@ -9,37 +9,37 @@ end
 
 class BLAKE
 	@@iv512 = [
-		0x6A09E667F3BCC908, 0xBB67AE8584CAA73B, 0x3C6EF372FE94F82B, 0xA54FF53A5F1D36F1,
-		0x510E527FADE682D1, 0x9B05688C2B3E6C1F, 0x1F83D9ABFB41BD6B, 0x5BE0CD19137E2179
+		0x6a09e667f3bcc908, 0xbb67ae8584caa73b, 0x3c6ef372fe94f82b, 0xa54ff53a5f1d36f1,
+		0x510e527fade682d1, 0x9b05688c2b3e6c1f, 0x1f83d9abfb41bd6b, 0x5be0cd19137e2179
 	]
 
 	@@iv384 = [
-		0xCBBB9D5DC1059ED8, 0x629A292A367CD507, 0x9159015A3070DD17, 0x152FECD8F70E5939,
-		0x67332667FFC00B31, 0x8EB44A8768581511, 0xDB0C2E0D64F98FA7, 0x47B5481DBEFA4FA4
+		0xcbbb9d5dc1059ed8, 0x629a292a367cd507, 0x9159015a3070dd17, 0x152fecd8f70e5939,
+		0x67332667ffc00b31, 0x8eb44a8768581511, 0xdb0c2e0d64f98fa7, 0x47b5481dbefa4fa4
 	]
 
 	@@iv256 = [
-		0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
-		0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19
+		0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+		0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
 	]
 
 	@@iv224 = [
-		0xC1059ED8, 0x367CD507, 0x3070DD17, 0xF70E5939,
-		0xFFC00B31, 0x68581511, 0x64F98FA7, 0xBEFA4FA4
+		0xc1059ed8, 0x367cd507, 0x3070dd17, 0xf70e5939,
+		0xffc00b31, 0x68581511, 0x64f98fa7, 0xbefa4fa4
 	]
 
 	@@π8 = [
-		0x243F6A8885A308D3, 0x13198A2E03707344, 0xA4093822299F31D0, 0x082EFA98EC4E6C89,
-		0x452821E638D01377, 0xBE5466CF34E90C6C, 0xC0AC29B7C97C50DD, 0x3F84D5B5B5470917,
-		0x9216D5D98979FB1B, 0xD1310BA698DFB5AC, 0x2FFD72DBD01ADFB7, 0xB8E1AFED6A267E96,
-		0xBA7C9045F12C7F99, 0x24A19947B3916CF7, 0x0801F2E2858EFC16, 0x636920D871574E69
+		0x243f6a8885a308d3, 0x13198a2e03707344, 0xa4093822299f31d0, 0x082efa98ec4e6c89,
+		0x452821e638d01377, 0xbe5466cf34e90c6c, 0xc0ac29b7c97c50dd, 0x3f84d5b5b5470917,
+		0x9216d5d98979fb1b, 0xd1310ba698dfb5ac, 0x2ffd72dbd01adfb7, 0xb8e1afed6a267e96,
+		0xba7c9045f12c7f99, 0x24a19947b3916cf7, 0x0801f2e2858efc16, 0x636920d871574e69
 	]
 
 	@@π4 = [
-		0x243F6A88, 0x85A308D3, 0x13198A2E, 0x03707344,
-		0xA4093822, 0x299F31D0, 0x082EFA98, 0xEC4E6C89,
-		0x452821E6, 0x38D01377, 0xBE5466CF, 0x34E90C6C,
-		0xC0AC29B7, 0xC97C50DD, 0x3F84D5B5, 0xB5470917
+		0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
+		0xa4093822, 0x299f31d0, 0x082efa98, 0xec4e6c89,
+		0x452821e6, 0x38d01377, 0xbe5466cf, 0x34e90c6c,
+		0xc0ac29b7, 0xc97c50dd, 0x3f84d5b5, 0xb5470917
 	]
 
 	@@σ = [
@@ -69,8 +69,9 @@ class BLAKE
 	attr_reader :output_size, :salt
 
 	def initialize(output_size = 512, salt = nil)
-		@output_size = output_size /= 8
-		if @output_size <= 32
+		@output_size = output_size
+		@output_words = output_size /= 8
+		if @output_words <= 32
 			@word_size, @pack_code, @num_rounds, @π, @rot_off = 4, 'L>', 14, @@π4, [16, 12, 8, 7]
 		else
 			@word_size, @pack_code, @num_rounds, @π, @rot_off = 8, 'Q>', 16, @@π8, [32, 25, 16, 11]
@@ -97,11 +98,12 @@ class BLAKE
 			input << [total_bits >> 64].pack('Q>').force_encoding('binary') # append high-order bytes of input bit length
 		end
 		input << [total_bits & 0xffffffffffffffff].pack('Q>').force_encoding('binary') # append low-order bytes of input bit length 
-		@state = case @output_size
-		when 28 then @@iv224
-		when 32 then @@iv256
-		when 48 then @@iv384
-		when 64 then @@iv512
+		
+		@state = case @output_words
+			when 28 then @@iv224.clone
+			when 32 then @@iv256.clone
+			when 48 then @@iv384.clone
+			when 64 then @@iv512.clone
 		end
 
 		@next_offset = 0
@@ -118,7 +120,7 @@ class BLAKE
 
 		@salt = orig_salt
 
-		@state.pack(@pack_code + '*')[0...@output_size]
+		@state.pack(@pack_code + '*')[0...@output_words]
 	end
 	alias :hash :digest
 
