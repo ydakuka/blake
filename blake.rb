@@ -93,10 +93,8 @@ class BLAKE
 		input << "\x80".force_encoding('binary') # mark the end of the input
 		rem = (input.length + @word_size * 2) % @block_size
 		input << ("\0" * (@block_size - rem)).force_encoding('binary') if rem > 0 # pad to block size - (2 * word size)
-		if @word_size == 8
-			input[-1] = (input[-1].ord | 0x01).chr # mark the word size as 64-bit
-			input << [total_bits >> 64].pack('Q>').force_encoding('binary') # append high-order bytes of input bit length
-		end
+		input[-1] = (input[-1].ord | 0x01).chr if @output_words % 32 == 0 # set last marker bit
+		input << [total_bits >> 64].pack('Q>').force_encoding('binary') if @word_size == 8 # append high-order bytes of input bit length
 		input << [total_bits & 0xffffffffffffffff].pack('Q>').force_encoding('binary') # append low-order bytes of input bit length 
 		
 		@state = case @output_words
