@@ -37,7 +37,9 @@ Gem::Specification.new do |spec|
     f.match %r{^(test|spec)/}
   end
 
-  spec.add_development_dependency 'bundler', '~> 1.16'
-  spec.add_development_dependency 'rake',    '~> 12.3'
-  spec.add_development_dependency 'pry',     '~> 0.12'
+  spec.add_development_dependency 'bundler',             '~> 1.16'
+  spec.add_development_dependency 'rake',                '~> 12.3'
+  spec.add_development_dependency 'pry',                 '~> 0.12'
+  spec.add_development_dependency 'rubocop',             '~> 0.73'
+  spec.add_development_dependency 'rubocop-performance', '~> 1.5'
 end
