@@ -38,8 +38,10 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_development_dependency 'bundler',             '~> 1.16'
-  spec.add_development_dependency 'rake',                '~> 12.3'
   spec.add_development_dependency 'pry',                 '~> 0.12'
+  spec.add_development_dependency 'rake',                '~> 12.3'
+  spec.add_development_dependency 'rspec',               '~> 3.8'
   spec.add_development_dependency 'rubocop',             '~> 0.73'
   spec.add_development_dependency 'rubocop-performance', '~> 1.5'
+  spec.add_development_dependency 'simplecov',           '~> 0.17'
 end
