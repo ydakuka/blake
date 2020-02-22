@@ -21,6 +21,30 @@ RSpec.describe Blake::Main do
     expect(Blake::Main.new.digest('test')).not_to eq Blake::Main.new.digest('not equal')
   end
 
+  context 'when salt is present' do
+    let(:salt) { [0, 2, 4, 8] }
+
+    specify do
+      expect(Blake::Main.digest('The quick brown fox jumps over the lazy dog', 224, salt).unpack('H*').join).to \
+        eq '9c745e156e27705b3dfa07cd26d623991655c049242953c4a331d133'
+    end
+
+    specify do
+      expect(Blake::Main.digest('The quick brown fox jumps over the lazy dog', 256, salt).unpack('H*').join).to \
+        eq 'd24ce44e7964dba5e27a20e80377ebef308215b7ff6da949dc96190ebd5818c6'
+    end
+
+    specify do
+      expect(Blake::Main.digest('The quick brown fox jumps over the lazy dog', 384, salt).unpack('H*').join).to \
+        eq '42e7983093f97c4fb8238bbc9378251b274c8f0f7ffd28ca73935a34e1f567dfee6bf31d6cea5766c92fdf4a3a5d3718'
+    end
+
+    specify do
+      expect(Blake::Main.digest('The quick brown fox jumps over the lazy dog', 512, salt).unpack('H*').join).to \
+        eq '930cddb5e7b41ba85b8179e14617fc4cb6372ba565b479c8cb726ef8c2a6526ff1b901af461ef9a6f91d71bda8079c0cc5e284f44014a1d2ec0d8d7814ae33f6'
+    end
+  end
+
   context 'when test 224 hash' do
     specify do
       expect(Blake::Main.digest('The quick brown fox jumps over the lazy dog', 224).unpack('H*').join).to \

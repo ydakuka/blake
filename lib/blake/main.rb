@@ -100,7 +100,8 @@ module Blake
     attr_reader :output_size, :salt
 
     def initialize(output_size = 512, salt = nil)
-      @output_size = output_size
+      self.output_size = output_size
+      self.salt = salt
 
       if output_words <= 32
         @word_size  = 4
@@ -115,8 +116,6 @@ module Blake
         @pi         = C64
         @rot_off    = [32, 25, 16, 11]
       end
-
-      self.salt = salt
     end
 
     def mask
@@ -177,7 +176,7 @@ module Blake
     alias hash digest
 
     def self.digest(input, *args)
-      Main.new(*args).digest(input)
+      new(*args).digest(input)
     end
 
     def chacha(block)
@@ -218,6 +217,14 @@ module Blake
 
   private
 
+    def output_size=(value)
+      unless value.is_a? Integer
+        raise TypeError, "Expected #{Integer}, got #{value.class}"
+      end
+
+      @output_size = value
+    end
+
     def salt=(salt)
       if !salt
         @salt = [0] * 4
@@ -225,7 +232,8 @@ module Blake
         @salt = salt
       elsif salt.length == @word_size * 4
         @salt = salt.unpack(@pack_code + '*')
-      else raise "salt must be #{@word_size * 4} bytes"
+      else
+        raise "salt must be #{@word_size * 4} bytes"
       end
     end
   end
