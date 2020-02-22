@@ -117,10 +117,13 @@ module Blake
         @rot_off    = [32, 25, 16, 11]
       end
 
-      @mask = 2**(@word_size * 8) - 1
       @block_size = @word_size * 16
 
       self.salt = salt
+    end
+
+    def mask
+      @mask ||= 2**(@word_size * 8) - 1
     end
 
     def digest(input, salt = @salt)
@@ -176,8 +179,8 @@ module Blake
       v = @state[0..7] + @pi[0..7]
       (0..3).each { |i| v[8 + i] ^= @salt[i] }
       if @next_offset != 0
-        v[12] ^= @next_offset & @mask
-        v[13] ^= @next_offset & @mask
+        v[12] ^= @next_offset & mask
+        v[13] ^= @next_offset & mask
         v[14] ^= @next_offset >> (@word_size * 8)
         v[15] ^= @next_offset >> (@word_size * 8)
       end
@@ -189,13 +192,13 @@ module Blake
 
           j = SIGMA[r % 10][i *= 2]
           k = SIGMA[r % 10][i + 1]
-          a = a + b + (block[j] ^ @pi[k]) & @mask
+          a = a + b + (block[j] ^ @pi[k]) & mask
           d = (d ^ a).ror(@rot_off[0], @word_size)
-          c = c + d & @mask
+          c = c + d & mask
           b = (b ^ c).ror(@rot_off[1], @word_size)
-          a = a + b + (block[k] ^ @pi[j]) & @mask
+          a = a + b + (block[k] ^ @pi[j]) & mask
           d = (d ^ a).ror(@rot_off[2], @word_size)
-          c = c + d & @mask
+          c = c + d & mask
           b = (b ^ c).ror(@rot_off[3], @word_size)
 
           v[step[0]] = a
