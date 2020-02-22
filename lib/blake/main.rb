@@ -101,9 +101,8 @@ module Blake
 
     def initialize(output_size = 512, salt = nil)
       @output_size = output_size
-      @output_words = output_size /= 8
 
-      if @output_words <= 32
+      if output_words <= 32
         @word_size  = 4
         @pack_code  = 'L>'
         @num_rounds = 14
@@ -128,6 +127,10 @@ module Blake
       @block_size ||= @word_size * 16
     end
 
+    def output_words
+      @output_words ||= @output_size / 8
+    end
+
     def digest(input, salt = @salt)
       # use a different salt just this once if one has been provided
       orig_salt = @salt
@@ -140,13 +143,13 @@ module Blake
       # pad to block size - (2 * word size)
       input << ("\0" * (block_size - rem)) if rem.positive?
       # set last marker bit
-      input[-1] = (input[-1].ord | 0x01).chr if (@output_words % 32).zero?
+      input[-1] = (input[-1].ord | 0x01).chr if (output_words % 32).zero?
       # append high-order bytes of input bit length
       input << [total_bits >> 64].pack('Q>') if @word_size == 8
       # append low-order bytes of input bit length
       input << [total_bits & MASK64BITS].pack('Q>')
 
-      @state = case @output_words
+      @state = case output_words
                when 28 then IV28.dup
                when 32 then IV32.dup
                when 48 then IV48.dup
@@ -168,7 +171,7 @@ module Blake
 
       @salt = orig_salt
 
-      @state.pack(@pack_code + '*')[0...@output_words]
+      @state.pack(@pack_code + '*')[0...output_words]
     end
 
     alias hash digest
