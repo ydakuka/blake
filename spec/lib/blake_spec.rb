@@ -15,6 +15,30 @@ RSpec.describe Blake do
       eq '1f7e26f63b6ad25a0896fd978fd050a1766391d2fd0471a77afb975e5034b7ad2d9ccf8dfb47abbbe656e1b82fbc634ba42ce186e8dc5e1ce09a885d41f43451'
   end
 
+  context 'when input is packed binary array' do
+    let(:input) { [7, 63, 152, 144].pack('C*') }
+
+    specify do
+      expect(Blake.digest(input, 224).unpack('H*').join).to \
+        eq '88bcb791826d2e864e450234a0fff51e9038bbc0789f8a80a3c8722e'
+    end
+
+    specify do
+      expect(Blake.digest(input, 256).unpack('H*').join).to \
+        eq 'a23e8b68b62c682f592fbfc9e70b7177cd0ff8154d6e895bce1b680ef4907ea0'
+    end
+
+    specify do
+      expect(Blake.digest(input, 384).unpack('H*').join).to \
+        eq 'c6cfa889eee34ce0dbd85d029b9ae067bc645ae58ece988f249a5923e787eeaa7d61cf958297c5484edd109269e3739d'
+    end
+
+    specify do
+      expect(Blake.digest(input, 512).unpack('H*').join).to \
+        eq 'c938374e8273b1a8dcfcd970d85e229e2ca422e3dcb64fdbec5ec055abc0d3c18bee1f077d37c5b08737a0510e2d3d82735a94669a1e124d92d4d63c55b5cfb2'
+    end
+  end
+
   context 'when salt is present' do
     let(:salt) { [0, 2, 4, 8] }
 

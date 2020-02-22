@@ -136,17 +136,22 @@ module Blake
       self.salt = salt if salt != @salt
 
       # pad input and append its length in bits
+      input.force_encoding('binary')
       total_bits = input.length * 8
-      input << "\x80" # mark the end of the input
+      input << "\x80".force_encoding('binary') # mark the end of the input
       rem = (input.length + @word_size * 2) % block_size
       # pad to block size - (2 * word size)
-      input << ("\0" * (block_size - rem)) if rem.positive?
+      if rem.positive?
+        input << ("\0" * (block_size - rem)).force_encoding('binary')
+      end
       # set last marker bit
       input[-1] = (input[-1].ord | 0x01).chr if (output_words % 32).zero?
       # append high-order bytes of input bit length
-      input << [total_bits >> 64].pack('Q>') if @word_size == 8
+      if @word_size == 8
+        input << [total_bits >> 64].pack('Q>').force_encoding('binary')
+      end
       # append low-order bytes of input bit length
-      input << [total_bits & MASK64BITS].pack('Q>')
+      input << [total_bits & MASK64BITS].pack('Q>').force_encoding('binary')
 
       @state = case output_words
                when 28 then IV28.dup
