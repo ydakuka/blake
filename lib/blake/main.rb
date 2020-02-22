@@ -97,7 +97,7 @@ module Blake
 
     MASK64BITS = 0xFFFFFFFFFFFFFFFF
 
-    attr_reader :output_size, :salt
+    # private_class_method :new
 
     def initialize(output_size = 512, salt = nil)
       self.output_size = output_size
@@ -173,12 +173,6 @@ module Blake
       @state.pack(@pack_code + '*')[0...output_words]
     end
 
-    alias hash digest
-
-    def self.digest(input, *args)
-      new(*args).digest(input)
-    end
-
     def chacha(block)
       v = @state[0..7] + @pi[0..7]
       (0..3).each { |i| v[8 + i] ^= @salt[i] }
@@ -216,6 +210,8 @@ module Blake
     end
 
   private
+
+    attr_reader :output_size, :salt
 
     def output_size=(value)
       unless value.is_a? Integer
