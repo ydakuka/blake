@@ -14,7 +14,7 @@ and 384 bits, respectively.
 ## Install
 
 ```
-gem install blake
+gem install blake.rb
 ```
 
 ## Usage
