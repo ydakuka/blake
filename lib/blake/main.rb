@@ -117,13 +117,15 @@ module Blake
         @rot_off    = [32, 25, 16, 11]
       end
 
-      @block_size = @word_size * 16
-
       self.salt = salt
     end
 
     def mask
       @mask ||= 2**(@word_size * 8) - 1
+    end
+
+    def block_size
+      @block_size ||= @word_size * 16
     end
 
     def digest(input, salt = @salt)
@@ -134,9 +136,9 @@ module Blake
       # pad input and append its length in bits
       total_bits = input.length * 8
       input << "\x80" # mark the end of the input
-      rem = (input.length + @word_size * 2) % @block_size
+      rem = (input.length + @word_size * 2) % block_size
       # pad to block size - (2 * word size)
-      input << ("\0" * (@block_size - rem)) if rem.positive?
+      input << ("\0" * (block_size - rem)) if rem.positive?
       # set last marker bit
       input[-1] = (input[-1].ord | 0x01).chr if (@output_words % 32).zero?
       # append high-order bytes of input bit length
@@ -154,8 +156,8 @@ module Blake
       @next_offset = 0
 
       while input.length.positive?
-        block = input.slice!(0, @block_size).unpack(@pack_code + '*')
-        @next_offset += @block_size * 8
+        block = input.slice!(0, block_size).unpack(@pack_code + '*')
+        @next_offset += block_size * 8
         # next_offset must only count input data, not padding, and must be 0 if the block contains only padding
         if @next_offset >= total_bits
           @next_offset = total_bits
