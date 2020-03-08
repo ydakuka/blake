@@ -4,10 +4,10 @@ $LOAD_PATH.unshift File.expand_path('lib', __dir__)
 require 'blake/version'
 
 Gem::Specification.new do |spec|
-  spec.name     = 'blake.rb'
+  spec.name     = 'blake'
   spec.version  = Blake::VERSION
   spec.license  = 'MIT'
-  spec.homepage = 'https://github.com/ydakuka/blake.rb'
+  spec.homepage = 'https://github.com/ydakuka/blake'
   spec.summary  = 'BLAKE hash function library for ruby'
   spec.platform = Gem::Platform::RUBY
 
@@ -26,9 +26,9 @@ Gem::Specification.new do |spec|
   DESCRIPTION
 
   spec.metadata = {
-    'homepage_uri' => 'https://github.com/ydakuka/blake.rb',
-    'source_code_uri' => 'https://github.com/ydakuka/blake.rb',
-    'bug_tracker_uri' => 'https://github.com/ydakuka/blake.rb/issues',
+    'homepage_uri' => 'https://github.com/ydakuka/blake',
+    'source_code_uri' => 'https://github.com/ydakuka/blake',
+    'bug_tracker_uri' => 'https://github.com/ydakuka/blake/issues',
   }.freeze
 
   spec.require_paths = ['lib']

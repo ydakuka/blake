@@ -1,5 +1,5 @@
-Blake.rb
-========
+Blake
+=====
 
 BLAKE is a cryptographic hash function based on Dan Bernstein's ChaCha stream
 cipher, but a permuted copy of the input block, XORed with round constants, is
@@ -14,7 +14,7 @@ and 384 bits, respectively.
 ## Install
 
 ```
-gem install blake.rb
+gem install blake
 ```
 
 ## Usage
