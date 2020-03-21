@@ -15,6 +15,16 @@ RSpec.describe Blake do
       eq '1f7e26f63b6ad25a0896fd978fd050a1766391d2fd0471a77afb975e5034b7ad2d9ccf8dfb47abbbe656e1b82fbc634ba42ce186e8dc5e1ce09a885d41f43451'
   end
 
+  context 'when output size is unknown' do
+    let(:input) { 'abc' }
+    let(:output_size) { 50 }
+
+    specify do
+      expect { Blake.digest(input, output_size) }.to \
+        raise_error TypeError, 'unknown output size'
+    end
+  end
+
   context 'when input is packed binary array' do
     let(:input) { [7, 63, 152, 144].pack('C*') }
 

@@ -97,8 +97,6 @@ module Blake
 
     MASK64BITS = 0xFFFFFFFFFFFFFFFF
 
-    # private_class_method :new
-
     def initialize(output_size = 512, salt = nil)
       self.output_size = output_size
       self.salt = salt
@@ -221,6 +219,10 @@ module Blake
     def output_size=(value)
       unless value.is_a? Integer
         raise TypeError, "Expected #{Integer}, got #{value.class}"
+      end
+
+      unless [224, 256, 384, 512].include? value
+        raise TypeError, 'unknown output size'
       end
 
       @output_size = value
